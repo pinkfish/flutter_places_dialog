@@ -7,7 +7,7 @@ import GoogleMaps
 public class SwiftFlutterPlacesDialogPlugin: NSObject, FlutterPlugin {
 
 var controller: FlutterViewController!
-var flutterResult: FlutterResult?
+var placeResult: FlutterResult?
 
 init(cont: FlutterViewController) {
   controller = cont;
@@ -28,11 +28,11 @@ init(cont: FlutterViewController) {
       GMSPlacesClient.provideAPIKey(call.arguments as! String)
       GMSServices.provideAPIKey(call.arguments as! String)
       result(true)
-    case "showPlacePicker":
+    case "showPlacesPicker":
       let config = GMSPlacePickerConfig(viewport: nil)
      let placePicker = GMSPlacePickerViewController(config: config)
      placePicker.delegate = self
-     flutterResult = result
+     placeResult = result
 
      // Display the place picker. This will call the delegate methods defined below when the user
      // has made a selection.
@@ -51,12 +51,47 @@ extension SwiftFlutterPlacesDialogPlugin : GMSPlacePickerViewControllerDelegate 
     viewController.dismiss(animated: true, completion: nil)
 
     // Send the result back.  Yay!
+
+
+                let selectedPlace = place
+                    let northeast: [String: Double?] = [
+                            "latitude" : selectedPlace.viewport?.northEast.latitude,
+                            "longitude" : selectedPlace.viewport?.northEast.longitude
+                            ];
+
+                    let southwest: [String: Double?] = [
+                            "latitude": selectedPlace.viewport?.southWest.latitude,
+                            "longitude":  selectedPlace.viewport?.southWest.longitude
+                    ]
+                    let bounds: [String: AnyObject] = [
+                            "northeast": northeast as AnyObject,
+                            "southwest":  southwest as AnyObject
+                    ]
+
+                    let result: [String: AnyObject?] = [
+                            "address": selectedPlace.formattedAddress as AnyObject?,
+                            "placeid":  Optional.some(selectedPlace.placeID) as AnyObject?,
+                            "latitude": Optional.some(selectedPlace.coordinate.latitude) as AnyObject?,
+                            "longitude": Optional.some(selectedPlace.coordinate.longitude) as AnyObject?,
+                            "name": Optional.some(selectedPlace.name) as AnyObject?,
+                            "phoneNumber": selectedPlace.phoneNumber as AnyObject?,
+                            "priceLevel": Optional.some(selectedPlace.priceLevel.rawValue) as AnyObject?,
+                            "rating": Optional.some(selectedPlace.rating) as AnyObject?,
+                            "bounds": Optional.some(bounds) as AnyObject?
+                    ]
+
+                    placeResult!(result)
+
+
   }
 
   public func placePicker(_ viewController: GMSPlacePickerViewController, didFailWithError error: Error) {
     // In your own app you should handle this better, but for the demo we are just going to log
     // a message.
     NSLog("An error occurred while picking a place: \(error)")
+    placeResult!(FlutterError.init(code: "UNAVAILABLE",
+                                                 message: "Error getting places",
+                                                 details: error))
   }
 
   public func placePickerDidCancel(_ viewController: GMSPlacePickerViewController) {
@@ -64,5 +99,6 @@ extension SwiftFlutterPlacesDialogPlugin : GMSPlacePickerViewControllerDelegate 
 
     // Dismiss the place picker.
     viewController.dismiss(animated: true, completion: nil)
+    placeResult!(nil)
   }
 }

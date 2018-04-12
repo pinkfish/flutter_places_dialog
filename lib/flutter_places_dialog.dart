@@ -2,6 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+enum PriceLevel {
+  Unknown,
+  Free,
+  Cheap,
+  Medium,
+  High,
+  Expensive
+}
+
 class PlaceLatLong {
   PlaceLatLong({this.latitude, this.longitude});
   num latitude;
@@ -9,29 +18,27 @@ class PlaceLatLong {
 }
 
 class PlaceBounds {
-  PlaceBounds({
-    this.northeast,
-    this.southwest});
+  PlaceBounds({this.northeast, this.southwest});
   PlaceLatLong northeast;
   PlaceLatLong southwest;
 }
 
 class PlaceDetails {
-  PlaceDetails({
-    this.address,
-    this.placeid,
-    this.location,
-    this.name,
-    this.phoneNumber,
-    this.priceLevel,
-    this.rating,
-    this.bounds});
+  PlaceDetails(
+      {this.address,
+      this.placeid,
+      this.location,
+      this.name,
+      this.phoneNumber,
+      this.priceLevel,
+      this.rating,
+      this.bounds});
   String address;
   String placeid;
   PlaceLatLong location;
   String name;
   String phoneNumber;
-  num priceLevel;
+  PriceLevel priceLevel;
   num rating;
   PlaceBounds bounds;
 }
@@ -53,9 +60,8 @@ class FlutterPlacesDialog {
 
   static Future<PlaceDetails> getPlacesDialog() async {
     print('Opening places dialog');
-   dynamic newData = await _channel.invokeMethod("showPlacePicker");
-print('result $newData');
-    Map<String, dynamic> data = await _channel.invokeMethod("showPlacesPicker");
+    Map<dynamic, dynamic> data = await _channel.invokeMethod("showPlacesPicker");
+    print("$data");
     PlaceDetails details = new PlaceDetails();
     details.name = data["name"];
     details.address = data["address"];
@@ -64,17 +70,39 @@ print('result $newData');
     details.location.longitude = data["longitude"];
     details.location.latitude = data["latitude"];
     details.phoneNumber = data["phoneNumber"];
-    details.priceLevel = data["priceLevel"];
+    switch (data["priceLevel"]) {
+      case -1:
+        details.priceLevel = PriceLevel.Unknown;
+        break;
+      case 0:
+        details.priceLevel= PriceLevel.Free;
+        break;
+      case 1:
+        details.priceLevel = PriceLevel.Cheap;
+        break;
+      case 2:
+        details.priceLevel = PriceLevel.Medium;
+        break;
+      case 3:
+        details.priceLevel= PriceLevel.High;
+        break;
+      case 4:
+        details.priceLevel = PriceLevel.Expensive;
+        break;
+      default:
+        details.priceLevel = PriceLevel.Unknown;
+        break;
+    }
     details.rating = data["rating"];
     details.bounds = new PlaceBounds();
     details.bounds.northeast = new PlaceLatLong();
     details.bounds.northeast.latitude = data["bounds"]["northeast"]["latitude"];
     details.bounds.northeast.latitude =
-    data["bounds"]["northeast"]["longitude"];
+        data["bounds"]["northeast"]["longitude"];
     details.bounds.southwest = new PlaceLatLong();
     details.bounds.northeast.latitude = data["bounds"]["southwest"]["latitude"];
     details.bounds.northeast.latitude =
-    data["bounds"]["southwest"]["longitude"];
+        data["bounds"]["southwest"]["longitude"];
     return details;
   }
 }

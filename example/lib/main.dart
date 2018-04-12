@@ -15,7 +15,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FlutterPlacesDialog.setGoogleApiKey("AIzaSyBVJ6DGEqQv4lRicySx0siZTCk-9lXY6lY");
+    FlutterPlacesDialog
+        .setGoogleApiKey(/*"AIzaSyBVJ6DGEqQv4lRicySx0siZTCk-9lXY6lY" */"");
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -33,6 +34,7 @@ class _MyAppState extends State<MyApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
+    print("$place");
     setState(() {
       _place = place;
     });
@@ -50,8 +52,12 @@ class _MyAppState extends State<MyApp> {
       body = new ListView(
         children: <Widget>[
           new Text(_place.address),
+          new Text(_place.name),
+          new Text(_place.placeid),
+          new Text(_place.location.latitude.toString() +
+              ", " +
+              _place.location.longitude.toString())
         ],
-
       );
     }
     return new MaterialApp(
