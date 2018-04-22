@@ -1,3 +1,4 @@
+#import <Flutter/Flutter.h>
 #import "FlutterPlacesDialogPlugin.h"
 #import <flutter_places_dialog/flutter_places_dialog-Swift.h>
 
