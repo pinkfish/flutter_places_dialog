@@ -27,40 +27,19 @@ the data in the places picker to the app.
     <string>Using location to display on a map</string>
 ```
 
- 2. Prior to using the Map plugin, you must call MapView.setApiKey(String apiKey). Example:
-```dart
-   import 'package:map_view/map_view.dart';
-
-   void main() {
-     MapView.setApiKey("<your_api_key>");
-     runApp(new MyApp());
-   }
-```
-
  ***Note***: If your iOS and Android API key are different, be sure to use your iOS API key here.
 
  3. Add code to show the MapView.
     ```dart
     //Create an instance variable for the mapView
-    var _mapView = new MapView();
-
-
-    //Add a method to call to show the map.
-    void showMap() {
-        _mapView.show(new MapOptions(showUserLocation: true));
-    }
+    var _place = await FlutterPlacesDialog.getPlacesDialog();
 
 
     ```
 
   4. Run your application on an iOS device or simulator.
   Confirm that when you display the map you see map detail.
-  If you only see a beige screen it's possible that your API key is incorrect. When your API
-  key is incorrect you'll see messages like this in the console:
-
-  ```text
-  ClientParametersRequest failed, 7 attempts remaining (0 vs 12). Error Domain=com.google.HTTPStatus Code=400 "(null)" UserInfo={data=<>}
-  ```
+  If you only see a beige screen it's possible that your API key is incorrect, or if it outright crashes.
 
   #### Common API Key problems for iOS
   1. Your Bundle ID does not match what is registered in the Google API Console.
@@ -85,10 +64,6 @@ find this file location under `android/app/src/main`
         <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="your_api_key"/>
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
     ```
-3. Add the MapActivity to your AndroidManifest.xml
-    ```xml
-        <activity android:name="com.apptreesoftware.mapview.MapActivity" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
-    ```
 4. In your `android/build.gradle` file. Under `buildScript` `dependencies` add:
     ```groovy
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.2-4'
@@ -107,7 +82,7 @@ find this file location under `android/app/src/main`
 
 ## Usage examples
 
-#### Show a map ( with a toolbar )
+#### Show the places picker ( with autocomplete )
 ```dart
   PlaceDetails place = await FlutterPlacesDialog.getPlacesDialog();
 ```
