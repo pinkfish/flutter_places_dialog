@@ -58,12 +58,12 @@ class FlutterPlacesDialogPlugin(val activity: Activity) : MethodCallHandler, io.
                 }
                 var selectedPlace = PlacePicker.getPlace(this.activity, data)
                 var northeast = mapOf(
-                        "latitude" to selectedPlace.getViewport().northeast.latitude,
-                        "longitude" to selectedPlace.getViewport().northeast.longitude
+                        "latitude" to selectedPlace.getViewport()?.northeast?.latitude,
+                        "longitude" to selectedPlace.getViewport()?.northeast?.longitude
                 )
                 var southwest = mapOf(
-                        "latitude" to selectedPlace.getViewport().southwest.latitude,
-                        "longitude" to selectedPlace.getViewport().southwest.longitude
+                        "latitude" to selectedPlace.getViewport()?.southwest?.latitude,
+                        "longitude" to selectedPlace.getViewport()?.southwest?.longitude
                 )
                 var bounds = mapOf(
                         "northeast" to northeast,
