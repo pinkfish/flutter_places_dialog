@@ -17,22 +17,28 @@ PODS:
     - GoogleMaps/Base (= 2.6.0)
 
 DEPENDENCIES:
-  - Flutter (from `Pods/.symlinks/flutter/ios`)
+  - Flutter (from `Pods/.symlinks/flutter/ios-release`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - GoogleMaps
+    - GooglePlacePicker
+    - GooglePlaces
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: Pods/.symlinks/flutter/ios
+    :path: Pods/.symlinks/flutter/ios-release
   flutter_places_dialog:
     :path: Pods/.symlinks/plugins/flutter_places_dialog/ios
 
 SPEC CHECKSUMS:
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
-  flutter_places_dialog: cbbfeaa16565999b5bbd8874b05ce8e8484a97ab
+  flutter_places_dialog: 0d92393c2b22bedcf62b0fa13c025c10bc667b37
   GoogleMaps: 42f91c68b7fa2f84d5c86597b18ceb99f5414c7f
   GooglePlacePicker: e4488625effb006f59de49e14b7a603e463e4261
   GooglePlaces: f6ddf33b75cef69e888907d9947c57198ed845f3
 
-PODFILE CHECKSUM: 70e69985f01fdaffe3180d3ae5e73472304a9371
+PODFILE CHECKSUM: 053181c8a81f9b75918d2db7970ec1688a41211a
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.0

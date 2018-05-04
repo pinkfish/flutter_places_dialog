@@ -24,5 +24,6 @@ A new flutter plugin project.
      'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/**',
      'OTHER_LDFLAGS' => '$(inherited) -undefined dynamic_lookup'
   }
+  s.static_framework = true
 end
 
