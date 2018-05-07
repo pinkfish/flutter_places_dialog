@@ -61,7 +61,7 @@ class FlutterPlacesDialog {
   static Future<PlaceDetails> getPlacesDialog() async {
     print('Opening places dialog');
     Map<dynamic, dynamic> data = await _channel.invokeMethod("showPlacesPicker");
-    print("$data");
+    print("Places data $data");
     PlaceDetails details = new PlaceDetails();
     details.name = data["name"];
     details.address = data["address"];

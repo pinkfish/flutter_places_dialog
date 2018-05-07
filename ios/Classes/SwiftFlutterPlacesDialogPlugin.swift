@@ -23,20 +23,27 @@ init(cont: FlutterViewController) {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-   switch (call.method) {
+    switch (call.method) {
     case "setApiKey":
       GMSPlacesClient.provideAPIKey(call.arguments as! String)
       GMSServices.provideAPIKey(call.arguments as! String)
       result(true)
     case "showPlacesPicker":
-      let config = GMSPlacePickerConfig(viewport: nil)
-     let placePicker = GMSPlacePickerViewController(config: config)
-     placePicker.delegate = self
-     placeResult = result
+        do {
+          let config = GMSPlacePickerConfig(viewport: nil)
+          let placePicker = GMSPlacePickerViewController(config: config)
+          placePicker.delegate = self
+          placeResult = result
 
-     // Display the place picker. This will call the delegate methods defined below when the user
-     // has made a selection.
-     controller!.present(placePicker, animated: true, completion: nil)
+          // Display the place picker. This will call the delegate methods defined below when the user
+          // has made a selection.
+          controller!.present(placePicker, animated: true, completion: nil)
+        } catch {
+          // Error doing the place dialog.
+          result(FlutterError.init(code: "UNAVAILABLE",
+             message: "Error opening dialog",
+             details: error))
+        }
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -51,38 +58,36 @@ extension SwiftFlutterPlacesDialogPlugin : GMSPlacePickerViewControllerDelegate 
     viewController.dismiss(animated: true, completion: nil)
 
     // Send the result back.  Yay!
+    let selectedPlace = place
+    let northeast: [String: Double?] = [
+            "latitude" : selectedPlace.viewport?.northEast.latitude,
+            "longitude" : selectedPlace.viewport?.northEast.longitude
+            ];
 
+    let southwest: [String: Double?] = [
+            "latitude": selectedPlace.viewport?.southWest.latitude,
+            "longitude":  selectedPlace.viewport?.southWest.longitude
+    ]
+    let bounds: [String: AnyObject] = [
+            "northeast": northeast as AnyObject,
+            "southwest":  southwest as AnyObject
+    ]
 
-                let selectedPlace = place
-                    let northeast: [String: Double?] = [
-                            "latitude" : selectedPlace.viewport?.northEast.latitude,
-                            "longitude" : selectedPlace.viewport?.northEast.longitude
-                            ];
+    let result: [String: AnyObject?] = [
+            "address": selectedPlace.formattedAddress as AnyObject?,
+            "placeid":  Optional.some(selectedPlace.placeID) as AnyObject?,
+            "latitude": Optional.some(selectedPlace.coordinate.latitude) as AnyObject?,
+            "longitude": Optional.some(selectedPlace.coordinate.longitude) as AnyObject?,
+            "name": Optional.some(selectedPlace.name) as AnyObject?,
+            "phoneNumber": selectedPlace.phoneNumber as AnyObject?,
+            "priceLevel": Optional.some(selectedPlace.priceLevel.rawValue) as AnyObject?,
+            "rating": Optional.some(selectedPlace.rating) as AnyObject?,
+            "bounds": Optional.some(bounds) as AnyObject?
+    ]
 
-                    let southwest: [String: Double?] = [
-                            "latitude": selectedPlace.viewport?.southWest.latitude,
-                            "longitude":  selectedPlace.viewport?.southWest.longitude
-                    ]
-                    let bounds: [String: AnyObject] = [
-                            "northeast": northeast as AnyObject,
-                            "southwest":  southwest as AnyObject
-                    ]
+    NSLog("Returning a result to flutter");
 
-                    let result: [String: AnyObject?] = [
-                            "address": selectedPlace.formattedAddress as AnyObject?,
-                            "placeid":  Optional.some(selectedPlace.placeID) as AnyObject?,
-                            "latitude": Optional.some(selectedPlace.coordinate.latitude) as AnyObject?,
-                            "longitude": Optional.some(selectedPlace.coordinate.longitude) as AnyObject?,
-                            "name": Optional.some(selectedPlace.name) as AnyObject?,
-                            "phoneNumber": selectedPlace.phoneNumber as AnyObject?,
-                            "priceLevel": Optional.some(selectedPlace.priceLevel.rawValue) as AnyObject?,
-                            "rating": Optional.some(selectedPlace.rating) as AnyObject?,
-                            "bounds": Optional.some(bounds) as AnyObject?
-                    ]
-
-                    placeResult!(result)
-
-
+    placeResult!(result)
   }
 
   public func placePicker(_ viewController: GMSPlacePickerViewController, didFailWithError error: Error) {
