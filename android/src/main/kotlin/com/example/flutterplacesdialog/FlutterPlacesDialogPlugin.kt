@@ -32,7 +32,8 @@ class FlutterPlacesDialogPlugin(val activity: Activity) : MethodCallHandler, io.
     override fun onMethodCall(call: MethodCall, result: Result): Unit {
         if (call.method.equals("setApiKey")) {
             // Don't really need to do anything here, maybe.
-            result.success(true)
+            System,out.println("Need to setup google-service.json on android")
+            result.success(false)
         } else if (call.method.equals("showPlacesPicker")) {
             val code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity)
             if (GoogleApiAvailability.getInstance().showErrorDialogFragment(activity, code, REQUEST_GOOGLE_PLAY_SERVICES)) {

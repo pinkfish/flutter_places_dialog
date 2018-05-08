@@ -86,3 +86,12 @@ find this file location under `android/app/src/main`
 ```dart
   PlaceDetails place = await FlutterPlacesDialog.getPlacesDialog();
 ```
+## FAQ
+### Dialog shows up and drops almost immediately
+
+Verify you have your google api key setup correctly.  If using iOS
+you need to set this via the API call, on android you need
+to setup the google-services.json correctly in your app
+deployment or it will not correctly show the screen, dropping
+out basically immediately.  You should get an error back from the
+api call to the client saying it dropped.
