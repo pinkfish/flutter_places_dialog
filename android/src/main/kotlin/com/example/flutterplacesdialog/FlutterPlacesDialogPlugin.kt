@@ -13,6 +13,8 @@ import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import com.google.android.gms.location.places.Place
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 
 class FlutterPlacesDialogPlugin(val activity: Activity) : MethodCallHandler, io.flutter.plugin.common.PluginRegistry.ActivityResultListener {
     var placeResult: Result? = null
@@ -41,6 +43,18 @@ class FlutterPlacesDialogPlugin(val activity: Activity) : MethodCallHandler, io.
             }
 
             var intentBuilder = PlacePicker.IntentBuilder()
+
+            val b = call.argument<Map<String, Map<String, Double>>>("bounds");
+            if (b != null) {
+                fun latLng(m: Map<String, Double>): LatLng {
+                    return LatLng(m["latitude"]!!, (m["longitude"]!!));
+                }
+
+                val se = latLng(b["southeast"]!!)
+                val nw = latLng(b["noethwest"]!!)
+                val bounds = LatLngBounds(se, nw)
+                intentBuilder = intentBuilder.setLatLngBounds(bounds);
+            }
             activity.startActivityForResult(intentBuilder.build(activity), PLACE_PICKER_REQUEST)
 
             placeResult = result
