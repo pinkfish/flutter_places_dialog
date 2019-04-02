@@ -1,26 +1,48 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
-enum PriceLevel {
-  Unknown,
-  Free,
-  Cheap,
-  Medium,
-  High,
-  Expensive
-}
+enum PriceLevel { Unknown, Free, Cheap, Medium, High, Expensive }
 
 class PlaceLatLong {
-  PlaceLatLong({this.latitude, this.longitude});
-  num latitude;
-  num longitude;
+  const PlaceLatLong({
+    @required this.latitude,
+    @required this.longitude,
+  });
+  final double latitude;
+  final double longitude;
+
+  PlaceLatLong.fromJson(Map<String, dynamic> data)
+      : this(
+          latitude: data['latitude'],
+          longitude: data['longitude'],
+        );
+
+  Map<String, dynamic> toJson() => {
+        'latitude': latitude,
+        'longitude': longitude,
+      };
 }
 
 class PlaceBounds {
-  PlaceBounds({this.northeast, this.southwest});
-  PlaceLatLong northeast;
-  PlaceLatLong southwest;
+  const PlaceBounds({
+    @required this.northeast,
+    @required this.southwest,
+  });
+  final PlaceLatLong northeast;
+  final PlaceLatLong southwest;
+
+  PlaceBounds.fromJson(Map<String, dynamic> data)
+      : this(
+          northeast: PlaceLatLong.fromJson(data['northeast']),
+          southwest: PlaceLatLong.fromJson(data['southwest']),
+        );
+
+  Map<String, dynamic> toJson() => {
+        'northeast': northeast.toJson(),
+        'southwest': southwest.toJson(),
+      };
 }
 
 class PlaceDetails {
@@ -58,24 +80,27 @@ class FlutterPlacesDialog {
     return ret;
   }
 
-  static Future<PlaceDetails> getPlacesDialog() async {
+  static Future<PlaceDetails> getPlacesDialog({
+    PlaceBounds bounds,
+  }) async {
     print('Opening places dialog');
-    Map<dynamic, dynamic> data = await _channel.invokeMethod("showPlacesPicker");
+    Map<dynamic, dynamic> data =
+        await _channel.invokeMethod("showPlacesPicker", {
+      "bounds": bounds?.toJson(),
+    });
     print("Places data $data");
     PlaceDetails details = new PlaceDetails();
     details.name = data["name"];
     details.address = data["address"];
     details.placeid = data["placeid"];
-    details.location = new PlaceLatLong();
-    details.location.longitude = data["longitude"];
-    details.location.latitude = data["latitude"];
+    details.location = new PlaceLatLong.fromJson(data);
     details.phoneNumber = data["phoneNumber"];
     switch (data["priceLevel"]) {
       case -1:
         details.priceLevel = PriceLevel.Unknown;
         break;
       case 0:
-        details.priceLevel= PriceLevel.Free;
+        details.priceLevel = PriceLevel.Free;
         break;
       case 1:
         details.priceLevel = PriceLevel.Cheap;
@@ -84,7 +109,7 @@ class FlutterPlacesDialog {
         details.priceLevel = PriceLevel.Medium;
         break;
       case 3:
-        details.priceLevel= PriceLevel.High;
+        details.priceLevel = PriceLevel.High;
         break;
       case 4:
         details.priceLevel = PriceLevel.Expensive;
@@ -94,15 +119,7 @@ class FlutterPlacesDialog {
         break;
     }
     details.rating = data["rating"];
-    details.bounds = new PlaceBounds();
-    details.bounds.northeast = new PlaceLatLong();
-    details.bounds.northeast.latitude = data["bounds"]["northeast"]["latitude"];
-    details.bounds.northeast.latitude =
-        data["bounds"]["northeast"]["longitude"];
-    details.bounds.southwest = new PlaceLatLong();
-    details.bounds.northeast.latitude = data["bounds"]["southwest"]["latitude"];
-    details.bounds.northeast.latitude =
-        data["bounds"]["southwest"]["longitude"];
+    details.bounds = new PlaceBounds.fromJson(data['bounds']);
     return details;
   }
 }

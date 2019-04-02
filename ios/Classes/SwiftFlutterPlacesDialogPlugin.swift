@@ -30,7 +30,17 @@ init(cont: FlutterViewController) {
       result(true)
     case "showPlacesPicker":
         do {
-          let config = GMSPlacePickerConfig(viewport: nil)
+          var viewport: GMSCoordinateBounds? = nil
+          let bounds = (call.arguments as! [String: Any])["bounds"] as! [String: [String: Double]]?;
+          if (bounds != nil) {
+            let northEast = CLLocationCoordinate2D(latitude: bounds!["northeast"]!["latitude"]!,
+                                                   longitude: bounds!["northeast"]!["longitude"]!)
+            let southWest = CLLocationCoordinate2D(latitude: bounds!["southwest"]!["latitude"]!,
+                                                   longitude: bounds!["southwest"]!["longitude"]!)
+            viewport = GMSCoordinateBounds(coordinate: northEast, coordinate: southWest)
+          }
+
+          let config = GMSPlacePickerConfig(viewport: viewport)
           let placePicker = GMSPlacePickerViewController(config: config)
           placePicker.delegate = self
           placeResult = result
